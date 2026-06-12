@@ -1,0 +1,342 @@
+<html>
+  <head>
+    <title>Classes</title>
+    <base target="_blank" />
+    <style>
+    	body {
+  margin: 0;
+  height: 100vh;
+  background: radial-gradient(
+      circle at center,
+      #000 0%,
+      #000 60%,
+      #4b0082 100%
+  ),
+  radial-gradient(
+      circle at top left,
+      rgba(75, 0, 130, 0.4),
+      transparent 70%
+  ),
+  radial-gradient(
+      circle at top right,
+      rgba(75, 0, 130, 0.4),
+      transparent 70%
+  ),
+  radial-gradient(
+      circle at bottom left,
+      rgba(75, 0, 130, 0.4),
+      transparent 70%
+  ),
+  radial-gradient(
+      circle at bottom right,
+      rgba(75, 0, 130, 0.4),
+      transparent 70%
+  );
+  background-blend-mode: screen;
+  background-color: #000;
+}
+
+    </style>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://ssl.gstatic.com/classroom/favicon.png"
+    />
+    <script>
+      console.log("Made by Scribblez");
+      function blank() {
+        let inFrame;
+
+        try {
+          inFrame = window !== top;
+        } catch (e) {
+          inFrame = true;
+        }
+
+        if (!inFrame && !navigator.userAgent.includes("Firefox")) {
+          const popup = open("about:blank", "_blank");
+          if (!popup || popup.closed) {
+            alert("Popups are disabled!");
+          } else {
+            const doc = popup.document;
+            const iframe = doc.createElement("iframe");
+            const style = iframe.style;
+            const link = doc.createElement("link");
+
+            doc.title = "Classes";
+            link.rel = "icon";
+            link.href = "https://ssl.gstatic.com/classroom/favicon.png";
+            iframe.src = location.href;
+            style.position = "fixed";
+            style.top = style.bottom = style.left = style.right = 0;
+            style.border = style.outline = "none";
+            style.width = style.height = "100%";
+
+            doc.body.appendChild(iframe);
+            location.replace("https://google.com");
+          }
+        }
+        //made by Bigfoot9999
+        function clockTime() {
+          var date = new Date();
+          var h = date.getHours(); // 0 - 23
+          var m = date.getMinutes(); // 0 - 59
+          var s = date.getSeconds(); // 0 - 59
+          var session = "AM";
+
+          if (h == 0) {
+            h = 12;
+          }
+
+          if (h > 12) {
+            h = h - 12;
+            session = "PM";
+          }
+
+          h = h < 10 ? "0" + h : h;
+          m = m < 10 ? "0" + m : m;
+          s = s < 10 ? "0" + s : s;
+
+          var time = h + ":" + m + ":" + s + " " + session;
+          document.getElementById("MyClock").innerText = time;
+          document.getElementById("MyClock").textContent = time;
+
+          setTimeout(clockTime, 1000);
+        }
+
+        clockTime();
+
+        document.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            const exploit = document.getElementById("exploit").value;
+            const siteload = window.open("about:blank", "_blank");
+            const doc1 = siteload.document;
+            const iframe1 = doc1.createElement("iframe");
+            const style1 = iframe1.style;
+            const link1 = doc1.createElement("link");
+
+            doc1.title = "Google Drive";
+            iframe1.src = exploit;
+            style1.position = "fixed";
+            style1.border = style1.outline = "none";
+            style1.top = style1.bottom = style1.left = style1.right = 0;
+            style1.width = style1.height = "100%";
+
+            link1.rel = "icon";
+            link1.href =
+              "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png";
+
+            doc1.body.appendChild(iframe1);
+          }
+        });
+      }
+
+      //detect iframe first
+      var txt;
+      if (window.frameElement) {
+        //yes i frame SO DONT DO ANYTHING because we already asked
+      } else {
+        //no iframe we should ask them
+        promptalert();
+      }
+
+      //alert
+      }
+    </script>
+    <script src="https://www.id.net/api/user_data/autologin?callback=idnet_autologin&amp;app_id=55961e5ee694aa0ae90003e8"></script>
+    <script src="https://cdn.jsdelivr.net/gh/scheng123321/tmm-html5-cdn1@51a72f0faa2d9cd524a0c11b4ca368350f988458/slope/TemplateData/UnityProgress.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/scheng123321/tmm-html5-cdn1@51a72f0faa2d9cd524a0c11b4ca368350f988458/slope/TemplateData/unityloader41.js"></script>
+    <script type="text/javascript">
+      var gameInstance;
+      window.onload = function () {
+        let bttn = document.createElement("button");
+        bttn.appendChild(document.createTextNode("Click here to play"));
+        bttn.setAttribute("id", "run_game");
+        bttn.style.display = "none";
+        bttn.style.position = "absolute";
+        document.body.appendChild(bttn);
+        bttn.style.display = "block";
+        bttn.style.left =
+          (document.body.clientWidth - bttn.offsetWidth) / 2 + "px";
+        bttn.style.top =
+          (document.body.clientHeight - bttn.offsetHeight) / 2 + "px";
+        bttn.onclick = function () {
+          gameInstance = UnityLoader.instantiate(
+            "gameContainer",
+            "https://cdn.jsdelivr.net/gh/scheng123321/tmm-html5-cdn1@51a72f0faa2d9cd524a0c11b4ca368350f988458/slope/Build/slope.json",
+            {
+              onProgress: UnityProgress,
+              Module: {
+                onRuntimeInitialized: function () {
+                  UnityProgress(gameInstance, "complete");
+                }
+              }
+            }
+          );
+          this.remove();
+        };
+      };
+    </script>
+  </head>
+
+  <body rw4gci="true">
+    <div class="webgl-content">
+      <div
+        id="gameContainer"
+        style="
+          width: 100%;
+          height: 100%;
+          margin: 0px;
+          padding: 0px;
+          border: 0px;
+          position: relative;
+          background: rgb(35, 31, 32);
+        "
+      >
+        <canvas
+          id="#canvas"
+          width="492"
+          height="423"
+          style="cursor: default;"
+        ></canvas>
+        <div class="logo Dark" style="display: none;"></div>
+        <div class="progress Dark" style="display: none;">
+          <div class="empty" style="width: 0%;"></div>
+          <div class="full" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+    <style>
+      button {
+        min-width: 100%;
+        font-family: inherit;
+        appearance: none;
+        border: 0;
+        border-radius: 5px;
+        background: #2c2c2c;
+        color: #fff;
+        padding: 18px 46px;
+        font-size: 28px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #3f3f3f;
+      }
+
+      button:focus {
+        outline: none;
+        box-shadow: 0 0 0 4px #cbd6ee;
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+      }
+      #bottomText {
+        font-family: Georgia, "Times New Roman", Times, serif;
+        font-size: 26px;
+      }
+        width="145"
+        height="96"
+      />
+    </a>
+  </body>
+</html>
+      
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixelated Arrow Keyboard</title>
+<style>
+  body {
+    background: #0a0a0a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: monospace;
+  }
+
+  .keyboard {
+    display: grid;
+    grid-template-columns: 64px 64px 64px;
+    grid-template-rows: 64px 64px 64px;
+    gap: 10px;
+  }
+
+  .key {
+    background: #222;
+    border: 3px solid #444;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    image-rendering: pixelated;
+    box-shadow: 0 0 10px #000;
+    transition: all 0.15s ease;
+  }
+
+  .key.active {
+    background: #00ffcc;
+    box-shadow: 0 0 25px #00ffcc;
+    border-color: #00ffcc;
+  }
+
+  /* Arrow positioning */
+  .up    { grid-column: 2; grid-row: 1; }
+  .left  { grid-column: 1; grid-row: 2; }
+  .down  { grid-column: 2; grid-row: 2; }
+  .right { grid-column: 3; grid-row: 2; }
+
+  /* Pixel arrows using gradients */
+  .arrow {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  .up .arrow {
+    background-image: linear-gradient(to bottom, 
+      transparent 0%, transparent 20%, 
+      white 20%, white 30%, 
+      transparent 30%, transparent 100%);
+    clip-path: polygon(50% 0%, 0% 70%, 30% 70%, 30% 100%, 70% 100%, 70% 70%, 100% 70%);
+  }
+
+  .down .arrow {
+    background-image: linear-gradient(to bottom, 
+      transparent 0%, transparent 70%, 
+      white 70%, white 80%, 
+      transparent 80%, transparent 100%);
+    clip-path: polygon(0% 30%, 30% 30%, 30% 0%, 70% 0%, 70% 30%, 100% 30%, 50% 100%);
+  }
+
+  .left .arrow {
+    background-image: linear-gradient(to right, 
+      transparent 0%, transparent 20%, 
+      white 20%, white 30%, 
+      transparent 30%, transparent 100%);
+    clip-path: polygon(0% 50%, 70% 0%, 70% 30%, 100% 30%, 100% 70%, 70% 70%, 70% 100%);
+  }
+
+  .right .arrow {
+    background-image: linear-gradient(to right, 
+      transparent 0%, transparent 70%, 
+      white 70%, white 80%, 
+      transparent 80%, transparent 100%);
+    clip-path: polygon(100% 50%, 30% 0%, 30% 30%, 0% 30%, 0% 70%, 30% 70%, 30% 100%);
+  }
+
+  /* Pixel effect */
+  .key, .arrow {
+    image-rendering: pixelated;
+  }
+</style>
+</head>
+<body>
