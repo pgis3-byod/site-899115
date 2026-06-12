@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chat V1</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #111;
+  color: white;
+}
+
+#app {
+  display: flex;
+  height: 100vh;
+}
+
+#sidebar {
+  width: 260px;
+  background: #1c1c1c;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+#chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.msg {
+  background: #222;
+  margin: 6px 0;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+input, button {
+  margin: 5px;
+  padding: 8px;
+}
+
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <input id="email" placeholder="email">
+  <input id="password" type="password" placeholder="password">
+  <input id="username" placeholder="username">
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <div id="sidebar">
+    <button onclick="openGlobal()">🌍 Global</button>
+    <button onclick="createRoom()">+ Create Room</button>
+    <button onclick="joinRoom()">🔗 Join Room</button>
+
+    <hr>
+
+    <div id="roomList"></div>
+  </div>
+
+  <div id="chat">
+    <div id="messages"></div>
+    <input id="msg" placeholder="message">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAENHNbcpimSnAzIbwDXUtqBik3Vw5cFVU",
+  authDomain: "pgis-3-chat.firebaseapp.com",
+  projectId: "pgis-3-chat"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let user = null;
+let username = "";
+let currentRoom = "global";
+
+/* ---------------- AUTH ---------------- */
+
+window.register = async function () {
+  const email = emailEl().value;
+  const password = passEl().value;
+  const name = userEl().value.trim().toLowerCase();
+
+  if (!email || !password || !name) return;
+
+  const taken = await getDoc(doc(db, "usernames", name));
+  if (taken.exists()) {
+    alert("Username taken");
+    return;
+  }
+
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+  user = cred.user;
+
+  await setDoc(doc(db, "users", user.uid), {
+    username: name,
+    email
+  });
+
+  await setDoc(doc(db, "usernames", name), {
+    uid: user.uid
+  });
+
+  afterLogin(name);
+};
+
+window.login = async function () {
+  const email = emailEl().value;
+  const password = passEl().value;
+
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+  user = cred.user;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  username = snap.data().username;
+
+  afterLogin(username);
+};
+
+function afterLogin(name) {
+  username = name;
+  localStorage.setItem("username", name);
+
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+
+  openGlobal();
+}
+
+/* ---------------- GLOBAL CHAT ---------------- */
+
+window.openGlobal = function () {
+  currentRoom = "global";
+  listenMessages();
+};
+
+/* ---------------- CREATE ROOM ---------------- */
+
+window.createRoom = async function () {
+  const name = prompt("Room name");
+  if (!name) return;
+
+  const invite = generateCode();
+
+  const ref = await addDoc(collection(db, "rooms"), {
+    name,
+    ownerId: user.uid,
+    inviteCode: invite
+  });
+
+  await setDoc(doc(db, "rooms", ref.id, "members", user.uid), {
+    role: "owner"
+  });
+
+  addRoom(ref.id, name);
+  alert("Invite code: " + invite);
+};
+
+/* ---------------- JOIN ROOM ---------------- */
+
+window.joinRoom = async function () {
+  const code = prompt("Invite code");
+  if (!code) return;
+
+  const allRoomsSnap = await getDocs(collection(db, "rooms"));
+
+  let found = null;
+
+  allRoomsSnap.forEach(r => {
+    if (r.data().inviteCode === code) {
+      found = { id: r.id, data: r.data() };
+    }
+  });
+
+  if (!found) return alert("Invalid code");
+
+  await setDoc(doc(db, "rooms", found.id, "members", user.uid), {
+    role: "user"
+  });
+
+  addRoom(found.id, found.data.name);
+};
+
+/* ---------------- ROOMS UI ---------------- */
+
+function addRoom(id, name) {
+  const div = document.createElement("div");
+  div.innerHTML = `<button onclick="switchRoom('${id}')">${name}</button>`;
+  document.getElementById("roomList").appendChild(div);
+}
+
+window.switchRoom = function (id) {
+  currentRoom = id;
+  listenMessages();
+};
+
+/* ---------------- MESSAGES ---------------- */
+
+function listenMessages() {
+  const q = query(
+    collection(db, "rooms", currentRoom, "messages"),
+    orderBy("createdAt")
+  );
+
+  onSnapshot(q, snap => {
+    const box = document.getElementById("messages");
+    box.innerHTML = "";
+
+    snap.forEach(m => {
+      const d = m.data();
+      const el = document.createElement("div");
+      el.className = "msg";
+      el.textContent = `${d.username}: ${d.text}`;
+      box.appendChild(el);
+    });
+  });
+}
+
+window.sendMessage = async function () {
+  const text = document.getElementById("msg").value;
+  if (!text) return;
+
+  await addDoc(
+    collection(db, "rooms", currentRoom, "messages"),
+    {
+      text,
+      username,
+      userId: user.uid,
+      createdAt: Date.now()
+    }
+  );
+
+  document.getElementById("msg").value = "";
+};
+
+/* ---------------- HELPERS ---------------- */
+
+function generateCode(len = 6) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let out = "";
+  for (let i = 0; i < len; i++) {
+    out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function emailEl() { return document.getElementById("email"); }
+function passEl() { return document.getElementById("password"); }
+function userEl() { return document.getElementById("username"); }
+
+/* ---------------- AUTH STATE ---------------- */
+
+onAuthStateChanged(auth, async (u) => {
+  if (!u) return;
+  user = u;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (snap.exists()) {
+    username = snap.data().username;
+    afterLogin(username);
+  }
+});
+</script>
+
+</body>
+</html>
